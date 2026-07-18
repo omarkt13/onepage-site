@@ -104,6 +104,14 @@
   .price p{color:var(--ink-soft);font-size:.88rem;margin:6px 0 18px}
   @media(max-width:760px){.prices{grid-template-columns:1fr}}
 
+  /* compare */
+  .compare{max-width:900px;margin:44px auto 0;padding:0 16px;overflow-x:auto}
+  .compare table{width:100%;min-width:560px;border-collapse:collapse;font-size:.9rem}
+  .compare th{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;text-align:left;padding:0 14px 10px 0}
+  .compare td{padding:12px 14px 12px 0;border-top:1px solid var(--line);color:var(--ink-soft);vertical-align:top;font-variant-numeric:tabular-nums}
+  .compare td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+  .compare .us td{border-top:2px solid var(--ink);color:var(--ink)}
+
   /* waitlist */
   .waitlist{text-align:center;background:var(--paper-dim);border-radius:22px;padding:70px 30px;margin:130px auto 0;max-width:1100px}
   footer{border-top:1px solid var(--line);margin-top:60px;padding:30px 0;color:var(--ink-faint);font-size:.82rem}
@@ -236,6 +244,25 @@
   </div>
 </div>
 <p class="microline" style="text-align:center;margin-top:18px">No subscription, ever. Charging you monthly to stay off your phone would contradict the product.</p>
+
+<!-- ================= compare ================= -->
+<div class="strip-head wrap">
+  <span class="kicker">The alternatives</span>
+  <h2 class="serif">Keep your phone. <em style="color:var(--ink-soft)">Keep your number.</em></h2>
+</div>
+<div class="compare fade">
+  <table>
+    <thead><tr><th scope="col"></th><th scope="col">Price</th><th scope="col">Monthly</th><th scope="col">What it really is</th></tr></thead>
+    <tbody>
+      <tr class="us"><td>OnePage</td><td>$229</td><td>$0</td><td>A companion — your phone stays your phone, elsewhere</td></tr>
+      <tr><td>Light Phone III</td><td>$599</td><td>+ carrier plan</td><td>A replacement phone, second number</td></tr>
+      <tr><td>Minimal Phone</td><td>$499</td><td>+ carrier plan</td><td>E-ink, but full Android — the app store comes with it</td></tr>
+      <tr><td>Mudita Kompakt</td><td>$439</td><td>+ carrier plan</td><td>A replacement e-ink phone</td></tr>
+      <tr><td>Punkt MC03</td><td>$699</td><td>$9.99</td><td>A replacement phone, plus a subscription</td></tr>
+      <tr><td>Apple Watch</td><td>$399+</td><td>varies</td><td>The pings, strapped to your wrist</td></tr>
+    </tbody>
+  </table>
+</div>
 
 <!-- ================= waitlist ================= -->
 <section id="waitlist" class="wrap" style="padding:0 16px">
