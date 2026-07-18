@@ -1,0 +1,576 @@
+<title>OnePage — leave your phone in another room</title>
+<!-- OnePage product site · single file, no dependencies -->
+
+<style>
+  /* ============ tokens ============ */
+  :root {
+    --paper: #E9E8E2;
+    --paper-raised: #F2F1EB;
+    --ink: #1B1B18;
+    --ink-soft: #4E4D47;
+    --ink-faint: #83817A;
+    --hairline: #C8C6BC;
+    --screen: #E4E3DC;      /* e-ink panel surface: stays light in both themes */
+    --screen-ink: #23231F;
+    --glow: #3050D8;        /* the smartphone world; used almost nowhere */
+    --shadow: rgba(27,27,24,.14);
+
+    --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif; /* device UI only */
+
+    --measure: 41rem;
+    --wide: 62rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #161613;
+      --paper-raised: #1E1E1A;
+      --ink: #E5E3DA;
+      --ink-soft: #A8A69B;
+      --ink-faint: #767469;
+      --hairline: #37362F;
+      --shadow: rgba(0,0,0,.5);
+      --glow: #6E86F2;
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: #E9E8E2; --paper-raised: #F2F1EB; --ink: #1B1B18;
+    --ink-soft: #4E4D47; --ink-faint: #83817A; --hairline: #C8C6BC;
+    --shadow: rgba(27,27,24,.14); --glow: #3050D8;
+  }
+  :root[data-theme="dark"] {
+    --paper: #161613; --paper-raised: #1E1E1A; --ink: #E5E3DA;
+    --ink-soft: #A8A69B; --ink-faint: #767469; --hairline: #37362F;
+    --shadow: rgba(0,0,0,.5); --glow: #6E86F2;
+  }
+
+  /* ============ base ============ */
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { display: block; }
+  ::selection { background: var(--ink); color: var(--paper); }
+
+  h1, h2, h3 { font-weight: 500; line-height: 1.15; text-wrap: balance; margin: 0; }
+  p { margin: 0; }
+  a { color: inherit; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .6875rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  section { padding: 5.5rem 1.5rem; }
+  .inner { max-width: var(--measure); margin: 0 auto; display: flex; flex-direction: column; gap: 1.4rem; }
+  .inner.wide { max-width: var(--wide); }
+  section h2 { font-size: clamp(1.7rem, 3.4vw, 2.3rem); }
+  .lede { font-size: 1.1875rem; color: var(--ink-soft); }
+
+  .rule { border: 0; border-top: 1px solid var(--hairline); max-width: var(--wide); margin: 0 auto; }
+
+  /* ============ header ============ */
+  header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    max-width: var(--wide); margin: 0 auto; padding: 1.4rem 1.5rem 0;
+  }
+  .wordmark { font-family: var(--mono); font-size: .9375rem; letter-spacing: .06em; }
+  .wordmark b { font-weight: 700; }
+  header nav { font-family: var(--mono); font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase; }
+  header nav a { text-decoration: none; color: var(--ink-faint); margin-left: 1.4rem; }
+  header nav a:hover, header nav a:focus-visible { color: var(--ink); }
+  @media (max-width: 640px) { header nav a { margin-left: .9rem; } }
+
+  /* ============ hero ============ */
+  .hero { padding: 4.5rem 1.5rem 5.5rem; }
+  .hero-grid {
+    max-width: var(--wide); margin: 0 auto;
+    display: grid; grid-template-columns: 1.05fr .95fr; gap: 4rem; align-items: center;
+  }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 3.4rem; } }
+  .hero h1 { font-size: clamp(2.4rem, 5.2vw, 3.6rem); }
+  .hero .lede { max-width: 36ch; }
+  .hero-copy { display: flex; flex-direction: column; gap: 1.5rem; }
+  .hero-facts {
+    display: flex; gap: 2.2rem; flex-wrap: wrap;
+    font-family: var(--mono); font-size: .8125rem; color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-facts span b { display: block; font-size: 1.25rem; color: var(--ink); font-weight: 600; }
+
+  /* ============ the device ============ */
+  .device-wrap { display: flex; justify-content: center; }
+  .device {
+    width: min(340px, 88vw);
+    background: var(--ink);
+    border-radius: 22px;
+    padding: 14px 14px 20px;
+    box-shadow: 0 24px 60px -24px var(--shadow), 0 2px 6px var(--shadow);
+  }
+  :root[data-theme="dark"] .device { background: #060605; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .device { background: #060605; } }
+  .screen {
+    /* e-ink stays paper-light in both themes, like a frontlit panel */
+    background: #E4E3DC;
+    color: #23231F;
+    border-radius: 8px;
+    aspect-ratio: 800 / 480;
+    font-family: var(--sans);
+    position: relative;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .screen * { line-height: 1.3; }
+  .eink-home {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 2px;
+  }
+  .eink-clock { font-size: clamp(3rem, 11vw, 3.6rem); font-weight: 700; letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+  .eink-date { font-size: .8125rem; }
+  .eink-unread { font-size: .75rem; font-weight: 700; margin-top: 10px; }
+  .eink-statusbar {
+    border-top: 1.5px solid #23231F;
+    display: flex; justify-content: space-between;
+    padding: 5px 10px 7px; font-size: .625rem;
+  }
+  /* incoming notification card */
+  .eink-notif {
+    position: absolute; left: 8px; right: 8px; top: 8px;
+    border: 2px solid #23231F; background: #E4E3DC;
+    padding: 7px 10px; font-size: .6875rem;
+    transform: translateY(-130%);
+  }
+  .eink-notif b { display: block; font-size: .75rem; }
+  .eink-notif .from { display: flex; justify-content: space-between; }
+  .eink-notif .from span:last-child { font-weight: 400; font-size: .625rem; }
+  .device-caption {
+    text-align: center; font-family: var(--mono); font-size: .6875rem;
+    color: var(--ink-faint); margin-top: 1rem; letter-spacing: .08em;
+  }
+
+  /* e-ink refresh: content inverts, flashes, settles — the panel's signature */
+  @keyframes einkFlash {
+    0%   { filter: invert(0); }
+    30%  { filter: invert(1); }
+    55%  { filter: invert(0); }
+    70%  { filter: invert(1); }
+    100% { filter: invert(0); }
+  }
+  .screen.flash { animation: einkFlash .5s steps(2, end); }
+  .eink-notif.arrived { transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .screen.flash { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ============ thesis ============ */
+  .thesis { text-align: left; }
+  .thesis blockquote {
+    margin: 0; font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.35;
+    text-wrap: balance;
+  }
+  .thesis blockquote em { font-style: italic; }
+  .thesis .attribution { font-family: var(--mono); font-size: .75rem; color: var(--ink-faint); letter-spacing: .1em; }
+
+  /* ============ two ledgers: through / refused ============ */
+  .ledgers {
+    max-width: var(--wide); margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+  }
+  @media (max-width: 780px) { .ledgers { grid-template-columns: 1fr; } }
+  .ledger { display: flex; flex-direction: column; gap: 1.2rem; }
+  .ledger h2 { font-size: 1.55rem; }
+  .ledger ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .ledger li {
+    padding: .8rem 0; border-bottom: 1px solid var(--hairline);
+    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  }
+  .ledger li:first-child { border-top: 1px solid var(--hairline); }
+  .ledger li .how { font-family: var(--mono); font-size: .6875rem; color: var(--ink-faint); text-align: right; white-space: nowrap; }
+  .refused li { color: var(--ink-faint); }
+  .refused li s { text-decoration-thickness: 2px; text-decoration-color: var(--ink); color: var(--ink-soft); font-size: 1.15rem; }
+  .refused li .why { font-family: var(--mono); font-size: .6875rem; text-align: right; }
+  .ledger .note { font-size: .9375rem; color: var(--ink-soft); }
+
+  /* ============ three distances ============ */
+  .distances { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); }
+  @media (max-width: 780px) { .distances { grid-template-columns: 1fr; } }
+  .distance { background: var(--paper); padding: 1.6rem 1.4rem 1.8rem; display: flex; flex-direction: column; gap: .7rem; }
+  .distance h3 { font-size: 1.2rem; }
+  .distance .link-label { font-family: var(--mono); font-size: .625rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+  .distance p { font-size: .9375rem; color: var(--ink-soft); }
+  .distance .needs { font-family: var(--mono); font-size: .6875rem; color: var(--ink-faint); margin-top: auto; padding-top: .8rem; }
+
+  /* ============ features ============ */
+  .feature { display: grid; grid-template-columns: 16rem 1fr; gap: 2.5rem; padding: 2.4rem 0; border-top: 1px solid var(--hairline); }
+  .feature:last-of-type { border-bottom: 1px solid var(--hairline); }
+  @media (max-width: 700px) { .feature { grid-template-columns: 1fr; gap: .8rem; } }
+  .feature h3 { font-size: 1.35rem; }
+  .feature .body { display: flex; flex-direction: column; gap: .9rem; color: var(--ink-soft); }
+  .feature .body strong { color: var(--ink); font-weight: 600; }
+
+  /* ============ honesty ============ */
+  .honesty { background: var(--paper-raised); border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+  .honesty .glowword { color: var(--glow); }
+  .honesty table { border-collapse: collapse; width: 100%; font-size: .9375rem; }
+  .honesty th, .honesty td { text-align: left; padding: .7rem .9rem .7rem 0; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+  .honesty th { font-family: var(--mono); font-size: .6875rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  .honesty td:first-child { white-space: nowrap; font-weight: 600; }
+  .table-scroll { overflow-x: auto; }
+
+  /* ============ specs ============ */
+  .specs dl {
+    margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 3rem;
+  }
+  @media (max-width: 700px) { .specs dl { grid-template-columns: 1fr; } }
+  .specs .spec { display: flex; justify-content: space-between; gap: 1.5rem; align-items: baseline; padding: .7rem 0; border-bottom: 1px solid var(--hairline); }
+  .specs dt { color: var(--ink-soft); font-size: .9375rem; }
+  .specs dd { margin: 0; font-family: var(--mono); font-size: .8125rem; text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ============ pricing ============ */
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); }
+  @media (max-width: 780px) { .pricing-grid { grid-template-columns: 1fr; } }
+  .price-card { background: var(--paper); padding: 1.8rem 1.5rem; display: flex; flex-direction: column; gap: .6rem; }
+  .price-card.hero-sku { background: var(--paper-raised); }
+  .price-card .sku { font-family: var(--mono); font-size: .6875rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+  .price-card .price { font-size: 2.3rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .price-card .price small { font-size: 1rem; font-weight: 400; color: var(--ink-faint); }
+  .price-card p { font-size: .9375rem; color: var(--ink-soft); }
+  .subnote { font-size: .9375rem; color: var(--ink-soft); }
+  .subnote b { color: var(--ink); }
+
+  /* ============ compare ============ */
+  .compare table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: .9375rem; }
+  .compare th, .compare td { text-align: left; padding: .75rem 1rem .75rem 0; border-bottom: 1px solid var(--hairline); }
+  .compare thead th { font-family: var(--mono); font-size: .6875rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  .compare td:first-child { font-weight: 600; white-space: nowrap; }
+  .compare .us td { border-bottom: 2px solid var(--ink); }
+  .compare td { font-variant-numeric: tabular-nums; }
+
+  /* ============ footer ============ */
+  footer { padding: 4rem 1.5rem 3rem; }
+  footer .inner { gap: .8rem; }
+  footer p { font-size: .9375rem; color: var(--ink-soft); }
+  footer .fine { font-family: var(--mono); font-size: .6875rem; color: var(--ink-faint); letter-spacing: .06em; }
+
+  /* ============ reveal on scroll ============ */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+</style>
+
+<header>
+  <div class="wordmark"><b>OnePage</b></div>
+  <nav aria-label="Sections">
+    <a href="#how">How it works</a>
+    <a href="#honesty">iPhone</a>
+    <a href="#specs">Specs</a>
+    <a href="#price">Price</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">E-ink phone companion</p>
+      <h1>Leave your phone in another room.</h1>
+      <p class="lede">OnePage relays the few things you genuinely can't go dark on — a call from school, a message from your partner, a meeting in twenty minutes — onto a calm page of ink. Everything else stays in the other room, with the phone.</p>
+      <div class="hero-facts">
+        <span><b>7–10 days</b>on a charge</span>
+        <span><b>95 g</b>passport-sized</span>
+        <span><b>$0/mo</b>no subscription</span>
+      </div>
+    </div>
+    <div class="device-wrap">
+      <div>
+        <div class="device" aria-label="OnePage device showing its home screen">
+          <div class="screen" id="heroScreen">
+            <div class="eink-notif" id="heroNotif">
+              <div class="from"><b>Sara</b><span>WhatsApp · now</span></div>
+              <span>Are we still on for tonight?</span>
+            </div>
+            <div class="eink-home">
+              <div class="eink-clock" id="heroClock">09:41</div>
+              <div class="eink-date" id="heroDate">Saturday, July 18</div>
+              <div class="eink-unread" id="heroUnread">all quiet</div>
+            </div>
+            <div class="eink-statusbar">
+              <span>phone: in the other room</span>
+              <span>Select opens messages</span>
+            </div>
+          </div>
+        </div>
+        <p class="device-caption">actual ink · actual quiet</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= THESIS ================= -->
+<section class="thesis">
+  <div class="inner reveal">
+    <p class="eyebrow">The bet</p>
+    <blockquote>You've tried grayscale, app timers, Do&nbsp;Not&nbsp;Disturb. Willpower against a supercomputer in your pocket loses every time. <em>Distance is the only intervention that holds</em> — OnePage makes distance workable.</blockquote>
+    <p class="attribution">The design filter for every feature: does it pull you back into a scroll loop? Then it's out.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= LEDGERS ================= -->
+<section>
+  <div class="ledgers">
+    <div class="ledger reveal">
+      <p class="eyebrow">What gets through</p>
+      <h2>Six channels. That's the list.</h2>
+      <ul>
+        <li>Calls — see who, answer to your earbuds <span class="how">via your phone</span></li>
+        <li>Messages — WhatsApp, SMS, Signal, Telegram <span class="how">via your phone</span></li>
+        <li>Calendar — day view, accept &amp; decline <span class="how">direct sync</span></li>
+        <li>Email — triage: read, archive, flag <span class="how">direct sync</span></li>
+        <li>Music &amp; podcasts — play, skip, volume <span class="how">via your phone</span></li>
+        <li>Alarms &amp; reminders <span class="how">on device</span></li>
+      </ul>
+      <p class="note">Nothing relays unless you allow it. The default is calls and starred contacts only; every additional app is a deliberate opt-in.</p>
+    </div>
+    <div class="ledger refused reveal">
+      <p class="eyebrow">What it refuses</p>
+      <h2>The feature list that matters.</h2>
+      <ul>
+        <li><s>Browser</s> <span class="why">no rabbit holes</span></li>
+        <li><s>Feeds</s> <span class="why">nothing to pull down</span></li>
+        <li><s>App store</s> <span class="why">nothing to install</span></li>
+        <li><s>Camera</s> <span class="why">nothing to post</span></li>
+        <li><s>Color, video, sound</s> <span class="why">ink doesn't scroll</span></li>
+        <li><s>Subscription</s> <span class="why">on principle</span></li>
+      </ul>
+      <p class="note">Each refusal is permanent. A screen that ghosts when you scroll is a screen nobody doomscrolls on — e-ink isn't the compromise here, it's the moat.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= HOW / THREE DISTANCES ================= -->
+<section id="how">
+  <div class="inner wide reveal">
+    <p class="eyebrow">How it works</p>
+    <h2>Three distances, one small device.</h2>
+    <p class="lede" style="max-width:52ch">OnePage talks to your phone over Bluetooth when it's near, and through the Dock — a charging cradle that parks your phone at home — when it isn't.</p>
+    <div class="distances" style="margin-top:1.2rem">
+      <div class="distance">
+        <span class="link-label">Bluetooth · ~10 m</span>
+        <h3>Phone in the next room</h3>
+        <p>Everything live: calls ring on OnePage and answer to your earbuds, messages arrive as they're sent, music controls in your hand.</p>
+        <span class="needs">needs: nothing else</span>
+      </div>
+      <div class="distance">
+        <span class="link-label">Bluetooth · catch-up</span>
+        <h3>Out of range for a while</h3>
+        <p>Walk away for an hour. When you're back in range, everything still waiting on the phone appears — nothing lost, nothing duplicated.</p>
+        <span class="needs">needs: nothing else</span>
+      </div>
+      <div class="distance">
+        <span class="link-label">Dock relay · anywhere</span>
+        <h3>Phone at home, you out</h3>
+        <p>The Dock holds the phone's link, charges it, and relays your notifications — encrypted end-to-end — to OnePage wherever there's Wi-Fi.</p>
+        <span class="needs">needs: the Dock</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= FEATURES ================= -->
+<section>
+  <div class="inner wide">
+    <p class="eyebrow reveal">On the page</p>
+    <div class="feature reveal">
+      <h3>Messaging Center</h3>
+      <div class="body">
+        <p>Every relayed notification lands in one quiet, thread-grouped ledger: what arrived, from whom, when. You check it <strong>on your schedule</strong> and choose what deserves a response. It turns "I might be missing something" into a list — which is the entire psychological job.</p>
+        <p>Handle something on the phone and it clears here automatically. Reading here never marks anything read there.</p>
+      </div>
+    </div>
+    <div class="feature reveal">
+      <h3>OnePage Messages</h3>
+      <div class="body">
+        <p>A first-party chat channel for the people you actually talk to. Full two-way conversation on both platforms — and your household needs <strong>one device, not two</strong>: your partner replies from their phone's app, you read it on ink.</p>
+        <p>Messages route to wherever you really are: docked and unplugged, they arrive on OnePage live; otherwise they fall back to the phone. Never stranded.</p>
+      </div>
+    </div>
+    <div class="feature reveal">
+      <h3>Circle</h3>
+      <div class="body">
+        <p>A quiet screen showing which of your people are unplugged right now — <em>"Sara docked her phone 2h ago."</em> Docking your phone starts to feel like <strong>joining, not missing out</strong>.</p>
+        <p>A state, never a score. No streaks, no counters, no notifications when someone docks. Mutual, opt-in, per contact, and it doesn't remember yesterday.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HONESTY ================= -->
+<section class="honesty" id="honesty">
+  <div class="inner reveal">
+    <p class="eyebrow">The iPhone honesty section</p>
+    <h2>What we can't do on iPhone — and won't pretend to.</h2>
+    <p>Apple lets accessories read notifications and act on calls, but reserves free-text replies for the Apple&nbsp;Watch. Most companion devices hand-wave this. We'd rather you know exactly what you're buying.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col"></th><th scope="col">iPhone</th><th scope="col">Android</th></tr></thead>
+        <tbody>
+          <tr><td>Read every notification</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Answer / decline calls</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Quick replies (“On my way”, editable)</td><td>Where the channel allows</td><td>Yes</td></tr>
+          <tr><td>Type replies to WhatsApp, SMS, Signal</td><td><b>No — Apple doesn't permit it</b></td><td>Yes</td></tr>
+          <tr><td>OnePage Messages (our channel)</td><td>Full two-way</td><td>Full two-way</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>On iPhone, OnePage is a <b>triage</b> device, not a conversation device: let 90% of pings die quietly, acknowledge the 10% that matter with a fast, short reply, and flag the rest for later — composing essays on e-ink was never the point. If Apple opens the door <span class="glowword">(EU pressure is active)</span>, replies ship in an update.</p>
+  </div>
+</section>
+
+<!-- ================= SPECS ================= -->
+<section class="specs" id="specs">
+  <div class="inner wide reveal">
+    <p class="eyebrow">Hardware</p>
+    <h2>Built like an instrument, priced like an accessory.</h2>
+    <dl>
+      <div class="spec"><dt>Display</dt><dd>4.26″ e-ink · 800×480 · touch · front light</dd></div>
+      <div class="spec"><dt>Battery</dt><dd>7–10 days typical · ~3 weeks standby</dd></div>
+      <div class="spec"><dt>Size</dt><dd>118 × 66 × 7.5 mm · 95 g</dd></div>
+      <div class="spec"><dt>Charging</dt><dd>USB-C</dd></div>
+      <div class="spec"><dt>Radios</dt><dd>Bluetooth LE · Wi-Fi</dd></div>
+      <div class="spec"><dt>Alerts</dt><dd>Vibration + buzzer · alarms work with no phone</dd></div>
+      <div class="spec"><dt>Attachment</dt><dd>Lanyard hole · MagSafe-compatible magnet ring</dd></div>
+      <div class="spec"><dt>Deliberately absent</dt><dd>Camera · mic · speaker · GPS · SIM</dd></div>
+    </dl>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= PRICING ================= -->
+<section id="price">
+  <div class="inner wide reveal">
+    <p class="eyebrow">Price</p>
+    <h2>Buy it once. That's the business model.</h2>
+    <div class="pricing-grid" style="margin-top:.6rem">
+      <div class="price-card">
+        <span class="sku">OnePage</span>
+        <span class="price">$229</span>
+        <p>The device. Works with the phone anywhere in Bluetooth range — next room, bag, drawer.</p>
+      </div>
+      <div class="price-card hero-sku">
+        <span class="sku">OnePage + Dock</span>
+        <span class="price">$279 <small>saves $29</small></span>
+        <p>The full ritual: dock the phone, take the page. The Dock charges your phone and relays to you anywhere with Wi-Fi.</p>
+      </div>
+      <div class="price-card">
+        <span class="sku">Dock</span>
+        <span class="price">$79</span>
+        <p>Charging cradle, phone parking spot, encrypted relay. Add one later, or one per home.</p>
+      </div>
+    </div>
+    <p class="subnote"><b>Subscription: $0.</b> Sync and relay cost us cents per user per month. Charging you monthly to stay off your phone would contradict the entire product.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ================= COMPARE ================= -->
+<section class="compare">
+  <div class="inner wide reveal">
+    <p class="eyebrow">The alternatives</p>
+    <h2>Keep your phone. Keep your number. Keep your money.</h2>
+    <p class="lede" style="max-width:52ch">Minimalist phones ask you to abandon a phone you like. Smartwatches strap the pings to your wrist. OnePage sits in between — and deletes the cellular modem those prices carry.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col"></th><th scope="col">Price</th><th scope="col">Monthly</th><th scope="col">Approach</th></tr></thead>
+        <tbody>
+          <tr class="us"><td>OnePage</td><td>$229</td><td>$0</td><td>Companion — your phone stays your phone, elsewhere</td></tr>
+          <tr><td>Light Phone III</td><td>$599</td><td>+ carrier plan</td><td>Replacement phone, second number</td></tr>
+          <tr><td>Mudita Kompakt</td><td>$439</td><td>+ carrier plan</td><td>Replacement e-ink phone</td></tr>
+          <tr><td>Punkt MC03</td><td>$699</td><td>$9.99</td><td>Replacement phone + subscription</td></tr>
+          <tr><td>Apple Watch</td><td>$399+</td><td>varies</td><td>Notifications, on your wrist, all day</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="subnote">And nobody triages email or reads a week of calendar on a 1.5″ wrist screen. The page is the point.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <hr class="rule" style="margin-bottom:2.2rem">
+  <div class="inner">
+    <div class="wordmark"><b>OnePage</b></div>
+    <p>In development. A working proof-of-concept — real iPhone, real ink, real distance — is being built in the open right now.</p>
+    <p class="fine">Notification relay is end-to-end encrypted; our servers route ciphertext they cannot read, and the scheme will be published for audit. Prices are planned US retail. iPhone reply limitations are Apple platform policy. © 2026 OnePage.</p>
+  </div>
+</footer>
+
+<script>
+  // Live clock on the hero device
+  const clockEl = document.getElementById('heroClock');
+  const dateEl = document.getElementById('heroDate');
+  function tick() {
+    const now = new Date();
+    clockEl.textContent = now.toTimeString().slice(0, 5);
+    dateEl.textContent = now.toLocaleDateString(undefined,
+      { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+  tick();
+  setInterval(tick, 15000);
+
+  // A notification arrives, calmly, once — with the e-ink refresh flash
+  const screen = document.getElementById('heroScreen');
+  const notif = document.getElementById('heroNotif');
+  const unread = document.getElementById('heroUnread');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function flash(cb) {
+    if (reduced) { cb(); return; }
+    screen.classList.add('flash');
+    setTimeout(() => { cb(); }, 250);
+    screen.addEventListener('animationend',
+      () => screen.classList.remove('flash'), { once: true });
+  }
+  setTimeout(() => flash(() => {
+    notif.classList.add('arrived');
+    notif.style.transition = reduced ? 'none' : 'transform .4s ease';
+    unread.textContent = '● 1 unread';
+  }), 3200);
+  // ...and is handled on the phone a while later: the ledger clears itself
+  setTimeout(() => flash(() => {
+    notif.classList.remove('arrived');
+    unread.textContent = 'all quiet';
+  }), 14000);
+
+  // Scroll reveals
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) {
+      e.target.classList.add('in'); io.unobserve(e.target);
+    }
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
